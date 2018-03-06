@@ -2,12 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import CHAR,Integer,SmallInteger,DateTime,Date,Time
-from sqlalchemy import create_engine,Column,PrimaryKeyConstraint,Index
+from sqlalchemy import Column,PrimaryKeyConstraint,Index
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from scrapy.utils.project import get_project_settings
-from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.sql.expression import Insert
 
 Base = declarative_base()
 
@@ -78,15 +74,4 @@ class VideoModel(Base):
     no_reprint = Column(SmallInteger)
     copyright = Column(SmallInteger)
 
-engine = create_engine(
-    get_project_settings().get('MYSQL_URL'),
-    # echo=True
-)
-Session = sessionmaker(bind=engine)
-Base.metadata.create_all(engine)
 
-@compiles(Insert)
-def insert_ignore(insert, compiler, **kw):
-    s = compiler.visit_insert(insert, **kw)
-    s = s.replace("INSERT INTO", "INSERT IGNORE INTO")
-    return s

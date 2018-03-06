@@ -5,56 +5,31 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
-import scrapy
+from .models import IndexGlobalModel,ScoresModel,VideoModel
+from six import with_metaclass
+from scrapy.item import Field, Item, ItemMeta
+
+class SqlalchemyItemMeta(ItemMeta):
+
+    def __new__(mcs, class_name, bases, attrs):
+        cls = super(SqlalchemyItemMeta, mcs).__new__(mcs, class_name, bases, attrs)
+        if cls.sqlalchemy_model:
+            cls._model_fields = []
+            for model_field in cls.sqlalchemy_model.__table__.columns:
+                    if model_field.name not in cls.fields:
+                        cls.fields[model_field.name] = Field()
+        return cls
+
+class SqlalchemyItem(with_metaclass(SqlalchemyItemMeta, Item)):
+    sqlalchemy_model = None
 
 
-class IndexGlobalItem(scrapy.Item):
-    # define the fields for your item here like:
-    badge =scrapy.Field()
-    cover = scrapy.Field()
-    favorites = scrapy.Field()
-    is_finish = scrapy.Field()
-    newest_ep_index = scrapy.Field()
-    pub_string = scrapy.Field()
-    pub_time = scrapy.Field()
-    season_id = scrapy.Field()
-    season_status = scrapy.Field()
-    title = scrapy.Field()
-    total_count = scrapy.Field()
-    update_pattern = scrapy.Field()
-    update_time = scrapy.Field()
-    url = scrapy.Field()
-    week = scrapy.Field()
+class IndexGlobalItem(SqlalchemyItem):
+    sqlalchemy_model = IndexGlobalModel
 
-class ScoresItem(scrapy.Item):
-    dt = scrapy.Field()
-    aid = scrapy.Field()
-    coins = scrapy.Field()
-    play = scrapy.Field()
-    video_review = scrapy.Field()
-    bangdan = scrapy.Field()
-    pinlv = scrapy.Field()
-    jiange = scrapy.Field()
-    fenqv = scrapy.Field()
-    author = scrapy.Field()
-    duration = scrapy.Field()
-    mid = scrapy.Field()
-    pic = scrapy.Field()
-    pts = scrapy.Field()
-    title = scrapy.Field()
-    trend = scrapy.Field()
+class ScoresItem(SqlalchemyItem):
+    sqlalchemy_model = ScoresModel
 
-class VideoItem(scrapy.Item):
-    dt = scrapy.Field()
-    pts = scrapy.Field()
-    aid = scrapy.Field()
-    view = scrapy.Field()
-    danmaku = scrapy.Field()
-    reply = scrapy.Field()
-    favorite = scrapy.Field()
-    coin = scrapy.Field()
-    share = scrapy.Field()
-    now_rank = scrapy.Field()
-    his_rank = scrapy.Field()
-    no_reprint = scrapy.Field()
-    copyright = scrapy.Field()
+
+class VideoItem(SqlalchemyItem):
+    sqlalchemy_model = VideoModel

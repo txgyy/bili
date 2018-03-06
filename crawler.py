@@ -6,6 +6,7 @@ from scrapy.utils.log import configure_logging
 from bili.spiders.scores import ScoresSpider
 from redis import StrictRedis
 from datetime import datetime
+from time import sleep
 configure_logging()
 runner = CrawlerProcess(get_project_settings())
 redis = StrictRedis.from_url(get_project_settings().get('REDIS_URL'))
@@ -55,11 +56,13 @@ def get_params(pl=True):
         ('电视剧', 11,),
     )
     if pl:
+        for i in product(bangdan[1:2], pinlv[-1:], jiange[:1], fenqv[1:-3]):
+            yield i
         # 近期
-        for i in product(bangdan[:2], pinlv[-1:], jiange[:-1], fenqv[:-3]):
-            yield i
-        for i in product(bangdan[-1:], pinlv[-1:], jiange[:-1], fenqv[-3:]):
-            yield i
+        # for i in product(bangdan[:2], pinlv[-1:], jiange[:-1], fenqv[:-3]):
+        #     yield i
+        # for i in product(bangdan[-1:], pinlv[-1:], jiange[:-1], fenqv[-3:]):
+        #     yield i
     else:
         # 全部
         for i in product(bangdan[:2], pinlv[0:-1], jiange, fenqv[:-3]):
@@ -71,6 +74,9 @@ def get_params(pl=True):
 
 if __name__ == '__main__':
     # crawl()
+    while datetime.now().minute%10!=0:
+        continue
+    sleep(1)
     task.LoopingCall(crawl,True).start(600)
     # task.LoopingCall(crawl,False).start(60*60*24)
     reactor.run()

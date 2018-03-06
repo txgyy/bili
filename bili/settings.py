@@ -46,13 +46,13 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    # 'bili.middlewares.BiliSpiderMiddleware': 543,
+    'bili.middlewares.BiliSpiderMiddleware': 543,
 }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    # 'bili.middlewares.BiliDownloaderMiddleware': 544,
+    'bili.middlewares.BiliDownloaderMiddleware': 544,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
 }
@@ -85,7 +85,7 @@ DOWNLOADER_MIDDLEWARES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 MYSQL_URL = 'mysql+pymysql://usual:123456@localhost:3306/usual?charset=utf8'
 
-LOG_LEVEL = "ERROR"
+LOG_LEVEL = "INFO"
 
 # DEPTH_PRIORITY = 1
 # SCHEDULER_DISK_QUEUE = 'scrapy.squeue.PickleFifoDiskQueue'
@@ -93,15 +93,14 @@ LOG_LEVEL = "ERROR"
 
 
 # CLOSESPIDER_ITEMCOUNT = 2000
-
+#规定TELNETCONSOLE端口范围
+# TELNETCONSOLE_PORT = None
 # reids
 REDIS_URL = 'redis://:123456@192.168.1.106:6379/0'
 # REDIS_HOST = "192.168.1.106"
 # REDIS_PORT = 6379
 # REDIS_PASSWD = "123456"
 # REDIS_DB = 0
-
-# TELNETCONSOLE_PORT = None
 
 # scrapy_redis
 # SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
@@ -110,7 +109,7 @@ REDIS_URL = 'redis://:123456@192.168.1.106:6379/0'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'bili.pipelines.BiliPipeline': 400,
+    # 'bili.pipelines.BiliPipeline': 400,
     'bili.pipelines.ScoresRedisPipeline': 300,
 }
 REDIS_ITEMS_KEY = '%(item)s:items'

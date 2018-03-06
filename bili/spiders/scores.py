@@ -5,16 +5,25 @@ from ..items import ScoresItem, VideoItem
 from bili.loaders import ScoresItemLoader
 import datetime
 from scrapy.exceptions import CloseSpider
+
+
 class ScoresSpider(scrapy.Spider):
     name = 'scores'
     allowed_domains = ['www.bilibili.com', 'api.bilibili.com']
-    custom_settings = {'LOG_FILE':r'logs\scores.log'}
-    def __init__(self,pl, ks, vs):
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'bili.pipelines.BiliPipeline': None,
+            'bili.pipelines.ScoresRedisPipeline': 300,
+        },
+        'LOG_FILE': r'logs\scores.log',
+    }
+
+    def __init__(self, pl, ks, vs):
         super(ScoresSpider, self).__init__()
         self.pl = pl
         self.ks = ks
         self.vs = vs
-        self.ps = ['bangdan','pinlv','jiange', 'fenqv']
+        self.ps = ['bangdan', 'pinlv', 'jiange', 'fenqv']
         self.start_urls = ['https://www.bilibili.com/index/rank/{:s}-{:s}{:d}-{:d}.json'.format(*self.vs)]
 
     def parse(self, response):
@@ -34,9 +43,9 @@ class ScoresSpider(scrapy.Spider):
                     l.add_value(key, video.get(key))
             if self.pl:
                 yield scrapy.Request('https://api.bilibili.com/x/web-interface/archive/stat?aid={}'.format(video.get('aid')),
-                                 meta={'item': {'pts': video.get('pts'),}},
-                                 callback=self.video_parse,
-                                 )
+                                     meta={'item': {'pts': video.get('pts'), }},
+                                     callback=self.video_parse,
+                                     )
         yield l.load_item()
 
     def video_parse(self, response):
